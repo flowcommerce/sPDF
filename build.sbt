@@ -10,9 +10,9 @@ licenses := Seq(
 
 organization := "io.flow"
 
-scalaVersion := "2.13.1"
+scalaVersion := "2.13.3"
 
-crossScalaVersions := Seq("2.12.10", "2.13.1")
+crossScalaVersions := Seq("2.12.10", "2.13.3")
 
 fork in Test := true
 
@@ -21,9 +21,22 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.1" % Test,
   "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-  compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.7.0" cross CrossVersion.full),
-  "com.github.ghik" %% "silencer-lib" % "1.7.0" % Provided cross CrossVersion.full,
 )
+
+
+libraryDependencies ++= (scalaBinaryVersion.value match {
+  case "2.12" => Seq(
+    compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
+    "com.github.ghik" % "silencer-lib" % "1.6.0" % Provided cross CrossVersion.full,
+    "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.6",
+  )
+  case _ => Seq()
+})
+
+scalacOptions += (scalaBinaryVersion.value match {
+  case "2.12" => "-P:silencer:globalFilters=parameter value.*?is never used"
+  case _ => ""
+})
 
 resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"
 
