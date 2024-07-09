@@ -15,7 +15,7 @@ The main features of __sPDF__ are:
 The source HTML can reference to images and stylesheet files as long as the URLs point to the absolute path of the source file.
 It's also possible to embed javascript code in the pages, `wkhtmltopdf` will wait for the document ready event before generating the PDF.
 
-## Installation ##
+## Installation ###
 
 Add the following to your sbt build for Scala 2.10, 2.11, 2.12 and 2.13:
 
