@@ -8,7 +8,7 @@ licenses := Seq(
 
 organization := "io.flow"
 
-scalaVersion := "2.13.14"
+scalaVersion := "2.13.15"
 
 enablePlugins(GitVersioning)
 git.useGitDescribe := true
