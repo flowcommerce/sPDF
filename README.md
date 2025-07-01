@@ -26,27 +26,27 @@ libraryDependencies += "io.flow" %% "spdf" % "1.4.3"
 ## Usage ##
 
 ```scala
-	import io.flow.spdf._
+import io.flow.spdf._
 
-	// Create a new Pdf converter with a custom configuration
-	// run `wkhtmltopdf --extended-help` for a full list of options
-	val pdf = Pdf(new PdfConfig {
-	  orientation := Landscape
-	  pageSize := "Letter"
-	  marginTop := "1in"
-	  marginBottom := "1in"
-	  marginLeft := "1in"
-	  marginRight := "1in"
-	})
+// Create a new Pdf converter with a custom configuration
+// run `wkhtmltopdf --extended-help` for a full list of options
+val pdf = Pdf(new PdfConfig {
+  orientation := Landscape
+  pageSize := "Letter"
+  marginTop := "1in"
+  marginBottom := "1in"
+  marginLeft := "1in"
+  marginRight := "1in"
+})
 
-	val page = <html><body><h1>Hello World</h1></body></html>
+val page = <html><body><h1>Hello World</h1></body></html>
 
-	// Save the PDF generated from the above HTML into a Byte Array
-	val outputStream = new ByteArrayOutputStream
-	pdf.run(page, outputStream)
+// Save the PDF generated from the above HTML into a Byte Array
+val outputStream = new ByteArrayOutputStream
+pdf.run(page, outputStream)
 
-	// Save the PDF of Google's homepage into a file
-	pdf.run(new URL("http://www.google.com"), new File("google.pdf"))
+// Save the PDF of Google's homepage into a file
+pdf.run(new URL("http://www.google.com"), new File("google.pdf"))
 ```
 
 If you want to use sPDF in headless mode on debian you'll need to call to wkhtmltopdf through a virtualizer like xvfb-run.
@@ -54,27 +54,25 @@ This is because wkhtmltopdf does not support running in headless mode on debian 
 in this kind of environment you need to use WrappedPdf instead of Pdf. For Example:
 
 ```scala
-	
+// Create a new Pdf converter with a custom configuration
+// run `wkhtmltopdf --extended-help` for a full list of options
+val pdf = WrappedPdf(Seq("xvfb-run", "wkhtmltopdf"), new PdfConfig {
+  orientation := Landscape
+  pageSize := "Letter"
+  marginTop := "1in"
+  marginBottom := "1in"
+  marginLeft := "1in"
+  marginRight := "1in"
+})
 
-	// Create a new Pdf converter with a custom configuration
-	// run `wkhtmltopdf --extended-help` for a full list of options
-	val pdf = WrappedPdf(Seq("xvfb-run", "wkhtmltopdf"), new PdfConfig {
-	  orientation := Landscape
-	  pageSize := "Letter"
-	  marginTop := "1in"
-	  marginBottom := "1in"
-	  marginLeft := "1in"
-	  marginRight := "1in"
-	})
+val page = <html><body><h1>Hello World</h1></body></html>
 
-	val page = <html><body><h1>Hello World</h1></body></html>
+// Save the PDF generated from the above HTML into a Byte Array
+val outputStream = new ByteArrayOutputStream
+pdf.run(page, outputStream)
 
-	// Save the PDF generated from the above HTML into a Byte Array
-	val outputStream = new ByteArrayOutputStream
-	pdf.run(page, outputStream)
-
-	// Save the PDF of Google's homepage into a file
-	pdf.run(new URL("http://www.google.com"), new File("google.pdf"))
+// Save the PDF of Google's homepage into a file
+pdf.run(new URL("http://www.google.com"), new File("google.pdf"))
 ```
 
 ## Installing wkhtmltopdf ##
@@ -90,9 +88,7 @@ Make sure `wkhtmltopdf` is installed and your JVM is running with the correct `P
 If that doesn't work you can manually set the path to `wkhtmltopdf` when you create a new `Pdf` instance:
 
 ```scala
-
 val pdf = Pdf("/opt/bin/wkhtmltopdf", PdfConfig.default)
-
 ```
 
 ### Resources aren't included in the PDF ###
@@ -103,23 +99,25 @@ Images, CSS, or JavaScript does not seem to be downloading correctly in the PDF.
 
 ### Asynchronous conversion ###
 
-__sPDF__ relyies on Scala's `scala.sys.process.Process` class to execute `wkhtmltopdf` and pipe input/output data.
+__sPDF__ relies on Scala's `scala.sys.process.Process` class to execute `wkhtmltopdf` and pipe input/output data.
 
-The execution of `wkhtmltopdf` and thus the conversion to PDF is blocking. If you need the processing to be asynchronous you can wrap the call inside a `Future`.
+The execution of `wkhtmltopdf` and thus the conversion to PDF is blocking. If you need the processing to be asynchronous, you can use `Pdf.prepare` and wrap the call inside a `Future`.
 
 ```scala
-
 val pdf = Pdf(PdfConfig.default)
 
-val result = Future { pdf.run(new URL("http://www.google.com"), new File("google.pdf")) }
-
+val p = pdf.prepare(new URL("http://www.google.com"), new File("google.pdf")).run() // start asynchronously
+val f = Future(blocking(p.exitValue())) // wrap in Future
+try Await.result(f, Duration(5, TimeUnit.SECONDS)) catch {
+  case _: TimeoutException => p.destroy() // destroy the process in case of timeout
+}
 ```
 
 ## Contributing ##
 
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
+* Add tests for it. This is important, so I don't break it in a future version unintentionally.
 * Commit, do not mess with build settings, version, or history.
 * Send me a pull request. Bonus points for topic branches.
 
@@ -135,7 +133,7 @@ val result = Future { pdf.run(new URL("http://www.google.com"), new File("google
 - [X] Full support for extended options
 - [X] Full support for input types
 - [ ] Streaming API (with `scalaz-stream`)
-- [ ] Simplified API with implicits
+- [ ] Simplified API with implicits
 - [ ] Integration with Play for streaming PDFs in HTTP responses
 
 ## Copyright ##

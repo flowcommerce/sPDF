@@ -1,22 +1,34 @@
 package io.flow.spdf
 
-import scala.sys.process._
 import java.io.File
+import scala.sys.process._
 
 class Pdf(executablePath: String, config: PdfConfig) {
   validateExecutable_!(executablePath)
+
+  /**
+   * Prepare the conversion tool to convert sourceDocument HTML into
+   * destinationDocument PDF.
+   * Returns the ProcessBuilder so you can handle the result any way you want, e.g., asynchronously.
+   * Do not forget to call run(), otherwise the process will not start.
+   */
+  def prepare[A, B](sourceDocument: A, destinationDocument: B)(implicit sourceDocumentLike: SourceDocumentLike[A], destinationDocumentLike: DestinationDocumentLike[B]): ProcessBuilder = {
+    val commandLine = toCommandLine(sourceDocument, destinationDocument)
+    val process = Process(commandLine)
+
+    def source = sourceDocumentLike.sourceFrom(sourceDocument) _
+
+    def sink = destinationDocumentLike.sinkTo(destinationDocument) _
+
+    (sink compose source)(process)
+  }
 
   /**
    * Runs the conversion tool to convert sourceDocument HTML into
    * destinationDocument PDF.
    */
   def run[A, B](sourceDocument: A, destinationDocument: B)(implicit sourceDocumentLike: SourceDocumentLike[A], destinationDocumentLike: DestinationDocumentLike[B]): Int = {
-    val commandLine = toCommandLine(sourceDocument, destinationDocument)
-    val process = Process(commandLine)
-    def source = sourceDocumentLike.sourceFrom(sourceDocument) _
-    def sink = destinationDocumentLike.sinkTo(destinationDocument) _
-
-    (sink compose source)(process).!
+    prepare(sourceDocument, destinationDocument).!
   }
 
   /**
@@ -63,4 +75,3 @@ object Pdf {
     new Pdf(executablePath, config)
 
 }
-
