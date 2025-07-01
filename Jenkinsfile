@@ -23,6 +23,10 @@ pipeline {
       when { branch 'main' }
       steps {
         script {
+          sh '''
+            git config user.email "tech@flow.io"
+            git config user.name "flow-tech"
+          '''
           VERSION = new flowSemver().calculateSemver()
           new flowSemver().commitSemver(VERSION)
         }
