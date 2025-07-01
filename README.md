@@ -6,7 +6,7 @@ On the backend it uses [wkhtmltopdf](http://wkhtmltopdf.org) which renders HTML 
 
 __sPDF__ is heavily inspired by Ruby's [PdfKit](https://github.com/pdfkit/pdfkit) gem.
 
-The main features of __sPDF__ are:
+The main features of __sPDF__ are:-
 
 * full support of `wkhtmltopdf` extended parameters (see the source of the `PdfConfig` trait)
 * can read HTML from several sources: `java.io.File`, `java.io.InputStream`, `java.net.URL`, `scala.xml.Elem`, and `String`
