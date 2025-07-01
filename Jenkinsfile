@@ -20,7 +20,7 @@ pipeline {
     }
 
     stage('Tag new version') {
-      //when { branch 'main' }
+      when { branch 'main' }
       steps {
         script {
           sh '''
