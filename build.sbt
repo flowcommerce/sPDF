@@ -34,7 +34,7 @@ Test / fork := true
 
 libraryDependencies ++= Seq(
   "org.mockito" %% "mockito-scala-scalatest" % "2.0.0" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scala-lang.modules" %% "scala-xml" % "2.4.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0",
 )
