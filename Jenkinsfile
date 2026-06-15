@@ -70,7 +70,6 @@ pipeline {
             )
           ]) {
             sh 'sbt clean +publish'
-            syncDependencyLibrary()
           }
         }
       }
