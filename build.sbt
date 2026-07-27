@@ -33,7 +33,7 @@ lazy val allScalacOptions = Seq(
 Test / fork := true
 
 libraryDependencies ++= Seq(
-  "org.mockito" %% "mockito-scala-scalatest" % "2.2.1" % Test,
+  "org.mockito" %% "mockito-scala-scalatest" % "2.2.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
   "org.scala-lang.modules" %% "scala-xml" % "2.4.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
