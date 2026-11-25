@@ -39,8 +39,6 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
 )
 
-resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/"
-
 publishTo := {
   val host = "https://flow.jfrog.io/flow"
   if (isSnapshot.value) {
